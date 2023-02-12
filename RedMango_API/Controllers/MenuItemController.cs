@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.EntityFrameworkCore;
 using RedMango_API.Data;
 using RedMango_API.Models;
 using RedMango_API.Models.DTO;
@@ -31,7 +32,7 @@ namespace RedMango_API.Controllers
             return Ok(_response);
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:int}",Name ="GetMenuItem")]
         public async Task<IActionResult> GetMenuItem(int id)
         {
             if(id == 0)
@@ -69,6 +70,8 @@ namespace RedMango_API.Controllers
                     };
                     _context.MenuItemUsers.Add(menuItemToCreate);
                     _context.SaveChanges();
+                    _response.Result = HttpStatusCode.Created;
+                    return CreatedAtRoute("GetMenuItem", new { id = menuItemToCreate.Id }, _response);
 
                 }
                 else
@@ -95,6 +98,52 @@ namespace RedMango_API.Controllers
                 await imageFile.CopyToAsync(fileStream);
             }
             return imageName;
+        }
+
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult<ApiResponse>> UpdateMenuItem(int id, [FromForm] MenuItemUpdateDTO menuItemUpdateDTO)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    if(menuItemUpdateDTO == null || id != menuItemUpdateDTO.Id)
+                    {
+                        return BadRequest();
+                    }
+                    MenuItem menuItemFromDb= await _context.MenuItemUsers.FindAsync(id); 
+                    if (menuItemFromDb == null) 
+                    {
+                        return BadRequest();
+                    }
+
+                    menuItemFromDb.Name = menuItemUpdateDTO.Name;
+                    menuItemFromDb.Description = menuItemUpdateDTO.Description;
+                    menuItemFromDb.Category = menuItemUpdateDTO.Category;
+                    menuItemFromDb.Price = menuItemUpdateDTO.Price;
+                    menuItemFromDb.SpecialTag = menuItemUpdateDTO.SpecialTag;
+
+                    if(menuItemUpdateDTO.File != null)
+                    {
+                        menuItemFromDb.Image = await SaveImage(menuItemUpdateDTO.File);
+                    }
+                    _context.MenuItemUsers.Update(menuItemFromDb);
+                    _context.SaveChanges();
+                    _response.StatusCode = HttpStatusCode.NoContent;
+                    return Ok(_response);
+                    
+                }
+                else
+                {
+                    _response.IsSuccess = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.ToString() };
+            }
+            return _response;
         }
     }
 }
