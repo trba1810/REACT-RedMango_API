@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using RedMango_API.Data;
 using RedMango_API.Models;
+using RedMango_API.Models.DTO;
 using System.Net;
 
 namespace RedMango_API.Controllers
@@ -12,12 +13,14 @@ namespace RedMango_API.Controllers
     public class MenuItemController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _webHostEnvironment;
         private ApiResponse _response;
 
-        public MenuItemController(ApplicationDbContext context)
+        public MenuItemController(ApplicationDbContext context,IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
             _response = new ApiResponse(); 
+            _webHostEnvironment = webHostEnvironment;
         }
 
         [HttpGet]
@@ -45,6 +48,53 @@ namespace RedMango_API.Controllers
             _response.Result = menuItem;
             _response.StatusCode = HttpStatusCode.OK;
             return Ok(_response);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<ApiResponse>> CreateMenuItem([FromForm]MenuItemCreateDTO menuItemCreateDTO)
+        {
+            try
+            {
+                if(ModelState.IsValid)
+                {
+
+                    MenuItem menuItemToCreate = new()
+                    {
+                        Name = menuItemCreateDTO.Name,
+                        Price = menuItemCreateDTO.Price,
+                        Category = menuItemCreateDTO.Category,
+                        SpecialTag = menuItemCreateDTO.SpecialTag,
+                        Description = menuItemCreateDTO.Description,
+                        Image = await SaveImage(menuItemCreateDTO.File)
+                    };
+                    _context.MenuItemUsers.Add(menuItemToCreate);
+                    _context.SaveChanges();
+
+                }
+                else
+                {
+                    _response.IsSuccess = false;
+                }
+            }
+            catch (Exception ex) 
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.ToString() };  
+            }
+            return _response;
+        }
+
+        [NonAction]
+        public async Task<string> SaveImage(IFormFile imageFile)
+        {
+            string imageName = new string(Path.GetFileNameWithoutExtension(imageFile.FileName).Take(10).ToArray()).Replace(' ','-');
+            imageName= imageName + Path.GetExtension(imageFile.FileName);
+            var imagePath = Path.Combine(_webHostEnvironment.ContentRootPath, "Images", imageName);
+            using (var fileStream = new FileStream(imagePath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(fileStream);
+            }
+            return imageName;
         }
     }
 }
