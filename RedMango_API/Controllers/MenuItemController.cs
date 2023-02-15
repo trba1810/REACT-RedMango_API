@@ -17,10 +17,10 @@ namespace RedMango_API.Controllers
         private readonly IWebHostEnvironment _webHostEnvironment;
         private ApiResponse _response;
 
-        public MenuItemController(ApplicationDbContext context,IWebHostEnvironment webHostEnvironment)
+        public MenuItemController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
-            _response = new ApiResponse(); 
+            _response = new ApiResponse();
             _webHostEnvironment = webHostEnvironment;
         }
 
@@ -32,16 +32,16 @@ namespace RedMango_API.Controllers
             return Ok(_response);
         }
 
-        [HttpGet("{id:int}",Name ="GetMenuItem")]
+        [HttpGet("{id:int}", Name = "GetMenuItem")]
         public async Task<IActionResult> GetMenuItem(int id)
         {
-            if(id == 0)
+            if (id == 0)
             {
-                _response.StatusCode =HttpStatusCode.BadRequest;
+                _response.StatusCode = HttpStatusCode.BadRequest;
                 return BadRequest(_response);
             }
             MenuItem menuItem = _context.MenuItemUsers.FirstOrDefault(x => x.Id == id);
-            if(menuItem == null)
+            if (menuItem == null)
             {
                 _response.StatusCode = HttpStatusCode.NotFound;
                 return NotFound(_response);
@@ -52,11 +52,11 @@ namespace RedMango_API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse>> CreateMenuItem([FromForm]MenuItemCreateDTO menuItemCreateDTO)
+        public async Task<ActionResult<ApiResponse>> CreateMenuItem([FromForm] MenuItemCreateDTO menuItemCreateDTO)
         {
             try
             {
-                if(ModelState.IsValid)
+                if (ModelState.IsValid)
                 {
 
                     MenuItem menuItemToCreate = new()
@@ -79,10 +79,10 @@ namespace RedMango_API.Controllers
                     _response.IsSuccess = false;
                 }
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string> { ex.ToString() };  
+                _response.ErrorMessages = new List<string> { ex.ToString() };
             }
             return _response;
         }
@@ -90,8 +90,8 @@ namespace RedMango_API.Controllers
         [NonAction]
         public async Task<string> SaveImage(IFormFile imageFile)
         {
-            string imageName = new string(Path.GetFileNameWithoutExtension(imageFile.FileName).Take(10).ToArray()).Replace(' ','-');
-            imageName= imageName + Path.GetExtension(imageFile.FileName);
+            string imageName = new string(Path.GetFileNameWithoutExtension(imageFile.FileName).Take(10).ToArray()).Replace(' ', '-');
+            imageName = imageName + Path.GetExtension(imageFile.FileName);
             var imagePath = Path.Combine(_webHostEnvironment.ContentRootPath, "Images", imageName);
             using (var fileStream = new FileStream(imagePath, FileMode.Create))
             {
@@ -107,12 +107,12 @@ namespace RedMango_API.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    if(menuItemUpdateDTO == null || id != menuItemUpdateDTO.Id)
+                    if (menuItemUpdateDTO == null || id != menuItemUpdateDTO.Id)
                     {
                         return BadRequest();
                     }
-                    MenuItem menuItemFromDb= await _context.MenuItemUsers.FindAsync(id); 
-                    if (menuItemFromDb == null) 
+                    MenuItem menuItemFromDb = await _context.MenuItemUsers.FindAsync(id);
+                    if (menuItemFromDb == null)
                     {
                         return BadRequest();
                     }
@@ -123,7 +123,7 @@ namespace RedMango_API.Controllers
                     menuItemFromDb.Price = menuItemUpdateDTO.Price;
                     menuItemFromDb.SpecialTag = menuItemUpdateDTO.SpecialTag;
 
-                    if(menuItemUpdateDTO.File != null)
+                    if (menuItemUpdateDTO.File != null)
                     {
                         menuItemFromDb.Image = await SaveImage(menuItemUpdateDTO.File);
                     }
@@ -131,7 +131,7 @@ namespace RedMango_API.Controllers
                     _context.SaveChanges();
                     _response.StatusCode = HttpStatusCode.NoContent;
                     return Ok(_response);
-                    
+
                 }
                 else
                 {
@@ -144,6 +144,23 @@ namespace RedMango_API.Controllers
                 _response.ErrorMessages = new List<string> { ex.ToString() };
             }
             return _response;
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<ApiResponse>> DeleteMenuItem(int id)
+        {
+
+            if (id == 0)
+            {
+                return BadRequest();
+            }
+
+            MenuItem menuItemFromDB = await _context.MenuItemUsers.FindAsync(id);
+            _context.MenuItemUsers.Remove(menuItemFromDB);
+            _context.SaveChanges();
+            _response.StatusCode = HttpStatusCode.NoContent;
+            return Ok(_response);
+
         }
     }
 }
