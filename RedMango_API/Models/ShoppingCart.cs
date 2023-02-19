@@ -5,7 +5,7 @@ namespace RedMango_API.Models
     public class ShoppingCart
     {
         public int Id { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         
         public ICollection<CartItem> CartItems { get; set; }
 
