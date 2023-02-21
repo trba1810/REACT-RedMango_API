@@ -15,6 +15,7 @@ namespace RedMango_API.Models
         public string PickupEmail { get; set; }
         public string ApplicationUserId { get; set; }
         [ForeignKey("ApplicationUserId")]
+        public ApplicationUser ApplicationUser { get; set; }
         public double OrderTotal { get; set; }
 
         public DateTime OrderDate { get; set; }
