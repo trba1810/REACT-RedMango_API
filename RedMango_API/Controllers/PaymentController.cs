@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RedMango_API.Data;
 using RedMango_API.Models;
+using Stripe;
 using System.Net;
 
 namespace RedMango_API.Controllers
@@ -33,6 +34,23 @@ namespace RedMango_API.Controllers
                 _response.IsSuccess = false;
                 return BadRequest();
             }
+
+            StripeConfiguration.ApiKey = _configuration["StripeSettings:SecretKey"];
+            shoppingCart.CartTotal = shoppingCart.CartItems.Sum(x => x.quantity * x.MenuItem.Price);
+
+            PaymentIntentCreateOptions options = new PaymentIntentCreateOptions
+            {
+                Amount = (int)(shoppingCart.CartTotal * 100),
+                Currency = "usd",
+                AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
+                {
+                    Enabled = true,
+                },
+            };
+            PaymentIntentService service = new PaymentIntentService();
+            PaymentIntent response = service.Create(options);
+            shoppingCart.StripePaymentIntentId = response.Id;
+            shoppingCart.ClientSecret = response.ClientSecret;
 
             _response.Result = shoppingCart;
             _response.StatusCode = HttpStatusCode.OK;
