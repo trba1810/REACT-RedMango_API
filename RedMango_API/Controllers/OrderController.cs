@@ -95,11 +95,11 @@ namespace RedMango_API.Controllers
                     TotalItems = orderHeaderDTO.TotalItems,
                     Status = String.IsNullOrEmpty(orderHeaderDTO.Status) ? SD.status_pending : orderHeaderDTO.Status,
                 };
-                if(ModelState.IsValid )
+                if (ModelState.IsValid)
                 {
                     _context.OrderHeaders.Add(order);
                     _context.SaveChanges();
-                    foreach(var orderDetailDTO in orderHeaderDTO.OrderDetailsDTO)
+                    foreach (var orderDetailDTO in orderHeaderDTO.OrderDetailsDTO)
                     {
                         OrderDetails orderDetails = new()
                         {
@@ -122,6 +122,56 @@ namespace RedMango_API.Controllers
             {
                 _response.IsSuccess = false;
                 _response.ErrorMessages = new List<string> { ex.ToString() };
+            }
+            return _response;
+        }
+
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult<ApiResponse>> UpdateOrderHeader(int id, [FromBody] OrderHeaderUpdateDTO orderHeaderUpdateDTO)
+        {
+            try
+            {
+                if(orderHeaderUpdateDTO == null || id != orderHeaderUpdateDTO.OrderHeaderId) 
+                {
+                    return BadRequest();
+                }
+                OrderHeader orderFromDB = _context.OrderHeaders.FirstOrDefault(x => x.OrderHeaderId == id);
+                if (orderFromDB == null)
+                {
+                    _response.IsSuccess = false;
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest();
+                }
+                if (!string.IsNullOrEmpty(orderHeaderUpdateDTO.PickupName))
+                {
+                    orderFromDB.PickupName = orderHeaderUpdateDTO.PickupName;
+                }
+                if (!string.IsNullOrEmpty(orderHeaderUpdateDTO.PickupEmail))
+                {
+                    orderFromDB.PickupEmail = orderHeaderUpdateDTO.PickupEmail;
+                }
+                if (!string.IsNullOrEmpty(orderHeaderUpdateDTO.PickupPhoneNumber))
+                {
+                    orderFromDB.PickupPhoneNumber = orderHeaderUpdateDTO.PickupPhoneNumber;
+                }
+                if (!string.IsNullOrEmpty(orderHeaderUpdateDTO.Status))
+                {
+                    orderFromDB.Status = orderHeaderUpdateDTO.Status;
+                }
+                if (!string.IsNullOrEmpty(orderHeaderUpdateDTO.StripePaymentIntentId))
+                {
+                    orderFromDB.StripePaymentIntentId = orderHeaderUpdateDTO.StripePaymentIntentId;
+                }
+                _context.SaveChanges();
+                _response.StatusCode = HttpStatusCode.NoContent;
+                _response.IsSuccess = true;
+                return Ok(_response);
+
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
             }
             return _response;
         }
