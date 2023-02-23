@@ -21,48 +21,51 @@ namespace RedMango_API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResponse>> GetShoppingCart (string userId)
+        public async Task<ActionResult<ApiResponse>> GetShoppingCart(string userId)
         {
             try
             {
-                if(string.IsNullOrEmpty(userId))
+                ShoppingCart shoppingCart;
+                if (string.IsNullOrEmpty(userId))
                 {
-                    _response.IsSuccess= false;
-                    _response.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest(_response);
+                    shoppingCart = new();
                 }
-                ShoppingCart shoppingCart = _context.ShoppingCarts.Include(x => x.CartItems).ThenInclude(x => x.MenuItem).FirstOrDefault(x => x.UserId == userId);
-                if(shoppingCart.CartItems != null && shoppingCart.CartItems.Count > 0)
+                else
+                {
+                    shoppingCart = _context.ShoppingCarts.Include(x => x.CartItems).ThenInclude(x => x.MenuItem).FirstOrDefault(x => x.UserId == userId);
+                }
+
+                if (shoppingCart.CartItems != null && shoppingCart.CartItems.Count > 0)
                 {
                     shoppingCart.CartTotal = shoppingCart.CartItems.Sum(x => x.quantity * x.MenuItem.Price);
                 }
                 _response.Result = shoppingCart;
-                _response.StatusCode=HttpStatusCode.OK;
+                _response.StatusCode = HttpStatusCode.OK;
                 return Ok(_response);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString()};
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
                 _response.StatusCode = HttpStatusCode.BadRequest;
             }
             return _response;
-        } 
+        }
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse>> AddorUpdateItemInCart(string userId,int menuItemId,int updateQuantityBy)
+        public async Task<ActionResult<ApiResponse>> AddorUpdateItemInCart(string userId, int menuItemId, int updateQuantityBy)
         {
-            ShoppingCart shoppingCart = _context.ShoppingCarts.Include(x=>x.CartItems).FirstOrDefault(x => x.UserId == userId);
+            ShoppingCart shoppingCart = _context.ShoppingCarts.Include(x => x.CartItems).FirstOrDefault(x => x.UserId == userId);
             MenuItem menuItem = _context.MenuItemUsers.FirstOrDefault(x => x.Id == menuItemId);
             if (menuItem == null)
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.IsSuccess= false;
+                _response.IsSuccess = false;
                 return BadRequest();
             }
-            if(shoppingCart == null && updateQuantityBy > 0)
+            if (shoppingCart == null && updateQuantityBy > 0)
             {
-                ShoppingCart newCart = new() { UserId = userId};
+                ShoppingCart newCart = new() { UserId = userId };
                 _context.ShoppingCarts.Add(newCart);
                 _context.SaveChanges();
 
@@ -79,7 +82,7 @@ namespace RedMango_API.Controllers
             else
             {
                 CartItem cartItemInCart = shoppingCart.CartItems.FirstOrDefault(x => x.MenuItemId == menuItemId);
-                if(cartItemInCart == null)
+                if (cartItemInCart == null)
                 {
                     CartItem newCartItem = new()
                     {
@@ -89,15 +92,15 @@ namespace RedMango_API.Controllers
                         MenuItem = null
                     };
                     _context.CartItems.Add(newCartItem);
-                    _context.SaveChanges(); 
+                    _context.SaveChanges();
                 }
                 else
                 {
                     int newQuantity = cartItemInCart.quantity += updateQuantityBy;
-                    if(updateQuantityBy == 0 || newQuantity <= 0)
+                    if (updateQuantityBy == 0 || newQuantity <= 0)
                     {
                         _context.CartItems.Remove(cartItemInCart);
-                        if(shoppingCart.CartItems.Count() == 1)
+                        if (shoppingCart.CartItems.Count() == 1)
                         {
                             _context.ShoppingCarts.Remove(shoppingCart);
                         }
