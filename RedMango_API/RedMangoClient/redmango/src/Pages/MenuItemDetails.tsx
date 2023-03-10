@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useGetMenuItemsByIdQuery } from "../Apis/menuItemApi";
 import { useNavigate } from "react-router-dom";
 import { useUpdateShoppingCartMutation } from "../Apis/shoppingCartApi";
+import { MainLoader } from "../Components/Page/Common";
 
 //UserId - a79aa4b7-cd94-4b80-af14-b1d7c98b4c10
 
@@ -107,7 +108,7 @@ function MenuItemDetails() {
           </div>
         </div>
       ) : (
-        <div>isLoading</div>
+        <MainLoader />
       )}
     </div>
   );
