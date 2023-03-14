@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
+import { inputHelper } from "../../../Helper";
 import { cartItemModel } from "../../../Interfaces";
 import { RootState } from "../../../Storage/Redux/store";
 
@@ -10,11 +11,25 @@ function CartPickUpDetails() {
   let grandTotal = 0;
   let totalItems = 0;
 
+  const initalUserData = {
+    name: "",
+    email: "",
+    phoneNumber: "",
+  };
+
   shoppingCartFromStore?.map((cartItem: cartItemModel) => {
     totalItems += cartItem.quantity ?? 0;
     grandTotal += (cartItem.menuItem?.price ?? 0) * (cartItem.quantity ?? 0);
     return null;
   });
+
+  const [userInput, setUserInput] = useState(initalUserData);
+
+  const handleUserInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const tempData = inputHelper(e, userInput);
+    setUserInput(tempData);
+  };
+
   return (
     <div className="border pb-5 pt-3">
       <h1 style={{ fontWeight: "300" }} className="text-center text-success">
@@ -26,8 +41,10 @@ function CartPickUpDetails() {
           Pickup Name
           <input
             type="text"
+            value={userInput.name}
             className="form-control"
             placeholder="name..."
+            onChange={handleUserInput}
             name="name"
             required
           />
@@ -36,8 +53,10 @@ function CartPickUpDetails() {
           Pickup Email
           <input
             type="email"
+            value={userInput.email}
             className="form-control"
             placeholder="email..."
+            onChange={handleUserInput}
             name="email"
             required
           />
@@ -47,8 +66,10 @@ function CartPickUpDetails() {
           Pickup Phone Number
           <input
             type="number"
+            value={userInput.phoneNumber}
             className="form-control"
             placeholder="phone number..."
+            onChange={handleUserInput}
             name="phoneNumber"
             required
           />
