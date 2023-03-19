@@ -7,5 +7,5 @@ export default interface apiResponse {
       [key: string]: string;
     };
   };
-  error: any;
+  error?: any;
 }
