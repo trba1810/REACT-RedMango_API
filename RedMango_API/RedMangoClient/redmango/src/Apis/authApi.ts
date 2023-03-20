@@ -1,4 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 
 const authApi = createApi({
   reducerPath: "authApi",
@@ -14,7 +14,7 @@ const authApi = createApi({
         headers: {
           "Content-type": "application/json",
         },
-        body: userData,
+        body: JSON.stringify(userData),
       }),
     }),
     loginUser: builder.mutation({

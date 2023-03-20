@@ -1,4 +1,4 @@
-import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import { menuItemReducer } from "./menuItemSlice";
 import { authApi, menuItemApi, shoppingCartApi } from "../../Apis";
 import { shoppingCartReducer } from "./shoppingCartSlice";

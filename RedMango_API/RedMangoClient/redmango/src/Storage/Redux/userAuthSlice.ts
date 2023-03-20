@@ -9,7 +9,7 @@ const initialState: userModel = {
 };
 
 export const userAuthSlice = createSlice({
-  name: "MenuItem",
+  name: "userAuth",
   initialState: initialState,
   reducers: {
     setLoggedInUser: (state, action) => {
