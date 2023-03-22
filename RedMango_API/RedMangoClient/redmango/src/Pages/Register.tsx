@@ -3,9 +3,11 @@ import { useRegisterUserMutation } from "../Apis/authApi";
 import { inputHelper } from "../Helper";
 import { apiResponse } from "../Interfaces";
 import { SD_Roles } from "../Utility/SD";
+import { registerUser } from "../Apis/LogRegApi";
 
 function Register() {
-  const [registerUser] = useRegisterUserMutation();
+  // const [registerUser] = useRegisterUserMutation();
+
   const [loading, setLoading] = useState(false);
   const [userInput, setUserInput] = useState({
     username: "",
@@ -21,18 +23,9 @@ function Register() {
     setUserInput(tempData);
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-
-    let userName = userInput.username;
-    let uPassword = userInput.password;
-    let uRole = userInput.role;
-    let uName = userInput.name;
-    console.log(uName);
-    console.log(uPassword);
-    console.log(userName);
-    console.log(uRole);
 
     const response: apiResponse = await registerUser({
       username: userInput.username,
@@ -41,17 +34,39 @@ function Register() {
       name: userInput.name,
     });
     console.log(response);
-    if (response.data) {
-      console.log(response.data);
-    } else if (response.error) {
-      console.log(response.data);
-    }
-    setLoading(false);
   };
+
+  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+
+  //   let userName = userInput.username;
+  //   let uPassword = userInput.password;
+  //   let uRole = userInput.role;
+  //   let uName = userInput.name;
+  //   console.log(uName);
+  //   console.log(uPassword);
+  //   console.log(userName);
+  //   console.log(uRole);
+
+  //   const response: apiResponse = await registerUser({
+  //     username: userInput.username,
+  //     password: userInput.password,
+  //     role: userInput.role,
+  //     name: userInput.name,
+  //   });
+  //   console.log(response);
+  //   if (response.data) {
+  //     console.log(response.data);
+  //   } else if (response.error) {
+  //     console.log(response.data);
+  //   }
+  //   setLoading(false);
+  // };
 
   return (
     <div className="container text-center">
-      <form method="post" onSubmit={handleSubmit}>
+      <form method="post" onSubmit={handleSubmitForm}>
         <h1 className="mt-5">Register</h1>
         <div className="mt-5">
           <div className="col-sm-6 offset-sm-3 col-xs-12 mt-4">

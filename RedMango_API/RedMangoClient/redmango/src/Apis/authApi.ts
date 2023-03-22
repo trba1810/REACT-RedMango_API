@@ -14,7 +14,7 @@ const authApi = createApi({
         headers: {
           "Content-type": "application/json",
         },
-        body: JSON.stringify(userData),
+        body: userData,
       }),
     }),
     loginUser: builder.mutation({
