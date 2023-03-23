@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import { useLoginUserMutation } from "../Apis/authApi";
 import { inputHelper } from "../Helper";
 import { apiResponse } from "../Interfaces";
+import { loginUser } from "../Apis/LogRegApi";
 
 function Login() {
   const [error, setError] = useState("");
-  const [loginUser] = useLoginUserMutation();
+  // const [loginUser] = useLoginUserMutation();
   const [loading, setLoading] = useState(false);
   const [userInput, setUserInput] = useState({
     username: "",
@@ -23,14 +24,9 @@ function Login() {
       username: userInput.username,
       password: userInput.password,
     });
-    if (response.data) {
-      console.log(response.data);
-    } else if (response.error) {
-      console.log(response.error);
-
-      setError(response.error);
-    }
-    setLoading(false);
+    console.log(response);
+    //   setError(response.error);
+    // setLoading(false);
   };
   return (
     <div className="container text-center">

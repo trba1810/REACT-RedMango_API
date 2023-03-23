@@ -16,3 +16,12 @@ export const registerUser = async (userData: any) => {
     console.error(error);
   }
 };
+
+export const loginUser = async (userCredentials: any) => {
+  try {
+    const response = await axiosInstance.post("auth/login", userCredentials);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
