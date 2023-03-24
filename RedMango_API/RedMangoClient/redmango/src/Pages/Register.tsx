@@ -36,6 +36,8 @@ function Register() {
     console.log(response);
   };
 
+  // This code is getting HTTP 400 error
+
   // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   //   e.preventDefault();
   //   setLoading(true);
