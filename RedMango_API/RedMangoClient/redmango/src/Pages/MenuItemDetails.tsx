@@ -1,15 +1,14 @@
-import React, { useState } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
-import { useGetMenuItemsByIdQuery } from "../Apis/menuItemApi";
+import { useGetMenuItemByIdQuery } from "../Apis/menuItemApi";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useUpdateShoppingCartMutation } from "../Apis/shoppingCartApi";
-import { MainLoader } from "../Components/Page/Common";
-
-//UserId - a79aa4b7-cd94-4b80-af14-b1d7c98b4c10
-
+import { MainLoader, MiniLoader } from "../Components/Page/Common";
+// USER ID  - b7ae37bf-09b1-4b47-9ce1-c963031d2920
 function MenuItemDetails() {
   const { menuItemId } = useParams();
-  const { data, isLoading } = useGetMenuItemsByIdQuery(menuItemId);
+  const { data, isLoading } = useGetMenuItemByIdQuery(menuItemId);
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState<boolean>(false);
@@ -26,11 +25,13 @@ function MenuItemDetails() {
 
   const handleAddToCart = async (menuItemId: number) => {
     setIsAddingToCart(true);
+
     const response = await updateShoppingCart({
       menuItemId: menuItemId,
       updateQuantityBy: quantity,
-      userId: "a79aa4b7-cd94-4b80-af14-b1d7c98b4c10",
+      userId: "b7ae37bf-09b1-4b47-9ce1-c963031d2920",
     });
+
     console.log(response);
 
     setIsAddingToCart(false);
@@ -61,20 +62,24 @@ function MenuItemDetails() {
             <p style={{ fontSize: "20px" }} className="pt-2">
               {data.result?.description}
             </p>
-            <span className="h3">{data.result?.price}</span> &nbsp;&nbsp;&nbsp;
+            <span className="h3">${data.result?.price}</span> &nbsp;&nbsp;&nbsp;
             <span
               className="pb-2  p-3"
               style={{ border: "1px solid #333", borderRadius: "30px" }}
             >
               <i
-                onClick={() => handleQuantity(-1)}
+                onClick={() => {
+                  handleQuantity(-1);
+                }}
                 className="bi bi-dash p-1"
                 style={{ fontSize: "25px", cursor: "pointer" }}
               ></i>
               <span className="h3 mt-3 px-3">{quantity}</span>
               <i
-                onClick={() => handleQuantity(+1)}
                 className="bi bi-plus p-1"
+                onClick={() => {
+                  handleQuantity(+1);
+                }}
                 style={{ fontSize: "25px", cursor: "pointer" }}
               ></i>
             </span>
@@ -82,7 +87,7 @@ function MenuItemDetails() {
               <div className="col-5">
                 {isAddingToCart ? (
                   <button disabled className="btn btn-success form-control">
-                    <MainLoader />
+                    <MiniLoader />
                   </button>
                 ) : (
                   <button
@@ -114,7 +119,12 @@ function MenuItemDetails() {
           </div>
         </div>
       ) : (
-        <MainLoader />
+        <div
+          className="d-flex justify-content-center"
+          style={{ width: "100%" }}
+        >
+          <MainLoader />
+        </div>
       )}
     </div>
   );

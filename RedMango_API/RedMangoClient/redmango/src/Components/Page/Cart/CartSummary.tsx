@@ -1,12 +1,12 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useUpdateShoppingCartMutation } from "../../../Apis/shoppingCartApi";
 import { cartItemModel } from "../../../Interfaces";
 import {
   removeFromCart,
   updateQuantity,
 } from "../../../Storage/Redux/shoppingCartSlice";
 import { RootState } from "../../../Storage/Redux/store";
+import { useUpdateShoppingCartMutation } from "../../../Apis/shoppingCartApi";
 
 function CartSummary() {
   const dispatch = useDispatch();
@@ -14,9 +14,11 @@ function CartSummary() {
   const shoppingCartFromStore: cartItemModel[] = useSelector(
     (state: RootState) => state.shoppingCartStore.cartItems ?? []
   );
+
   if (!shoppingCartFromStore) {
     return <div>Shopping Cart Empty</div>;
   }
+
   const handleQuantity = (
     updateQuantityBy: number,
     cartItem: cartItemModel
@@ -25,17 +27,19 @@ function CartSummary() {
       (updateQuantityBy == -1 && cartItem.quantity == 1) ||
       updateQuantityBy == 0
     ) {
+      //remove the item
       updateShoppingCart({
         menuItemId: cartItem.menuItem?.id,
         updateQuantityBy: 0,
-        userId: "a79aa4b7-cd94-4b80-af14-b1d7c98b4c10",
+        userId: "b7ae37bf-09b1-4b47-9ce1-c963031d2920",
       });
       dispatch(removeFromCart({ cartItem, quantity: 0 }));
     } else {
+      //update the quantity with the new quantity
       updateShoppingCart({
         menuItemId: cartItem.menuItem?.id,
         updateQuantityBy: updateQuantityBy,
-        userId: "a79aa4b7-cd94-4b80-af14-b1d7c98b4c10",
+        userId: "b7ae37bf-09b1-4b47-9ce1-c963031d2920",
       });
       dispatch(
         updateQuantity({
@@ -49,7 +53,8 @@ function CartSummary() {
   return (
     <div className="container p-4 m-2">
       <h4 className="text-center text-success">Cart Summary</h4>
-      {shoppingCartFromStore.map((cartItem, index) => (
+
+      {shoppingCartFromStore.map((cartItem: cartItemModel, index: number) => (
         <div
           key={index}
           className="d-flex flex-sm-row flex-column align-items-center custom-card-shadow rounded m-3"
@@ -68,7 +73,7 @@ function CartSummary() {
             <div className="d-flex justify-content-between align-items-center">
               <h4 style={{ fontWeight: 300 }}>{cartItem.menuItem?.name}</h4>
               <h4>
-                {(cartItem.quantity! * cartItem.menuItem!.price).toFixed(2)}
+                ${(cartItem.quantity! * cartItem.menuItem!.price).toFixed(2)}
               </h4>
             </div>
             <div className="flex-fill">

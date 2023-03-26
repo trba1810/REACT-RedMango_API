@@ -1,6 +1,6 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { menuItemModel } from "../../../Interfaces";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useUpdateShoppingCartMutation } from "../../../Apis/shoppingCartApi";
 import { MiniLoader } from "../Common";
@@ -15,15 +15,16 @@ function MenuItemCard(props: Props) {
 
   const handleAddToCart = async (menuItemId: number) => {
     setIsAddingToCart(true);
+
     const response = await updateShoppingCart({
       menuItemId: menuItemId,
       updateQuantityBy: 1,
-      userId: "a79aa4b7-cd94-4b80-af14-b1d7c98b4c10",
+      userId: "b7ae37bf-09b1-4b47-9ce1-c963031d2920",
     });
-    console.log(response);
 
     setIsAddingToCart(false);
   };
+
   return (
     <div className="col-md-4 col-12 p-4">
       <div
@@ -60,7 +61,13 @@ function MenuItemCard(props: Props) {
             )}
 
           {isAddingToCart ? (
-            <div style={{ position: "absolute", top: "15px", right: "15px" }}>
+            <div
+              style={{
+                position: "absolute",
+                top: "15px",
+                right: "15px",
+              }}
+            >
               <MiniLoader />
             </div>
           ) : (
@@ -92,7 +99,14 @@ function MenuItemCard(props: Props) {
               {props.menuItem.category}
             </p>
           </div>
-          <p className="card-text" style={{ textAlign: "center" }}>
+          <p
+            className="card-text"
+            style={{
+              textAlign: "center",
+              fontWeight: "light",
+              fontSize: "14px",
+            }}
+          >
             {props.menuItem.description}
           </p>
           <div className="row text-center">

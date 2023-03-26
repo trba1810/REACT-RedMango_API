@@ -1,7 +1,7 @@
 import React from "react";
-import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import { cartItemModel } from "../../Interfaces";
+import { useSelector } from "react-redux";
 import { RootState } from "../../Storage/Redux/store";
 let logo = require("../../Assets/Images/mango.png");
 
@@ -9,12 +9,10 @@ function Header() {
   const shoppingCartFromStore: cartItemModel[] = useSelector(
     (state: RootState) => state.shoppingCartStore.cartItems ?? []
   );
+
   return (
     <div>
-      <nav
-        className="navbar navbar-expand-lg bg-body-tertiary"
-        data-bs-theme="dark"
-      >
+      <nav className="navbar navbar-expand-lg bg-dark navbar-dark">
         <div className="container-fluid">
           <NavLink className="nav-link" aria-current="page" to="/">
             <img src={logo} style={{ height: "40px" }} className="m-1" />
@@ -79,10 +77,14 @@ function Header() {
                 </ul>
               </li>
               <div className="d-flex" style={{ marginLeft: "auto" }}>
-                <li className="nav-item pt-1">
+                <li className="nav-item">
                   <button
                     className="btn btn-success btn-outlined rounded-pill text-white mx-2"
-                    style={{ border: "none", height: "40px", width: "100px" }}
+                    style={{
+                      border: "none",
+                      height: "40px",
+                      width: "100px",
+                    }}
                   >
                     Logout
                   </button>
@@ -95,7 +97,11 @@ function Header() {
                 <li className="nav-item text-white">
                   <NavLink
                     className="btn btn-success btn-outlined rounded-pill text-white mx-2"
-                    style={{ border: "none", height: "40px", width: "100px" }}
+                    style={{
+                      border: "none",
+                      height: "40px",
+                      width: "100px",
+                    }}
                     to="/login"
                   >
                     Login

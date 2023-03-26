@@ -1,32 +1,29 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { inputHelper } from "../../../Helper";
 import { cartItemModel } from "../../../Interfaces";
 import { RootState } from "../../../Storage/Redux/store";
 import { MiniLoader } from "../Common";
 
-function CartPickUpDetails() {
+export default function CartPickUpDetails() {
   const [loading, setLoading] = useState(false);
   const shoppingCartFromStore: cartItemModel[] = useSelector(
     (state: RootState) => state.shoppingCartStore.cartItems ?? []
   );
   let grandTotal = 0;
   let totalItems = 0;
-
-  const initalUserData = {
+  const initialUserData = {
     name: "",
     email: "",
     phoneNumber: "",
   };
-
   shoppingCartFromStore?.map((cartItem: cartItemModel) => {
     totalItems += cartItem.quantity ?? 0;
     grandTotal += (cartItem.menuItem?.price ?? 0) * (cartItem.quantity ?? 0);
     return null;
   });
 
-  const [userInput, setUserInput] = useState(initalUserData);
-
+  const [userInput, setUserInput] = useState(initialUserData);
   const handleUserInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const tempData = inputHelper(e, userInput);
     setUserInput(tempData);
@@ -51,8 +48,8 @@ function CartPickUpDetails() {
             value={userInput.name}
             className="form-control"
             placeholder="name..."
-            onChange={handleUserInput}
             name="name"
+            onChange={handleUserInput}
             required
           />
         </div>
@@ -63,8 +60,8 @@ function CartPickUpDetails() {
             value={userInput.email}
             className="form-control"
             placeholder="email..."
-            onChange={handleUserInput}
             name="email"
+            onChange={handleUserInput}
             required
           />
         </div>
@@ -76,8 +73,8 @@ function CartPickUpDetails() {
             value={userInput.phoneNumber}
             className="form-control"
             placeholder="phone number..."
-            onChange={handleUserInput}
             name="phoneNumber"
+            onChange={handleUserInput}
             required
           />
         </div>
@@ -98,5 +95,3 @@ function CartPickUpDetails() {
     </div>
   );
 }
-
-export default CartPickUpDetails;

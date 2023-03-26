@@ -1,7 +1,5 @@
 import React from "react";
-import { Header, Footer } from "../Components/Layout";
-import { useState, useEffect } from "react";
-import { menuItemModel } from "../Interfaces";
+import { Footer, Header } from "../Components/Layout";
 import {
   Home,
   Login,
@@ -10,16 +8,19 @@ import {
   Register,
   ShoppingCart,
 } from "../Pages";
-import { Route, Routes } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useGetShoppingCartQuery } from "../Apis/shoppingCartApi";
 import { setShoppingCart } from "../Storage/Redux/shoppingCartSlice";
 
 function App() {
   const dispatch = useDispatch();
+
   const { data, isLoading } = useGetShoppingCartQuery(
-    "a79aa4b7-cd94-4b80-af14-b1d7c98b4c10"
+    "b7ae37bf-09b1-4b47-9ce1-c963031d2920"
   );
+
   useEffect(() => {
     if (!isLoading) {
       console.log(data.result);
@@ -38,8 +39,8 @@ function App() {
             element={<MenuItemDetails />}
           ></Route>
           <Route path="/shoppingCart" element={<ShoppingCart />}></Route>
-          <Route path="/login" element={<Login />}></Route>
-          <Route path="/register" element={<Register />}></Route>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="*" element={<NotFound />}></Route>
         </Routes>
       </div>

@@ -5,22 +5,22 @@ const menuItemApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "https://localhost:44315/api/",
   }),
-  tagTypes: ["menuItems"],
+  tagTypes: ["MenuItems"],
   endpoints: (builder) => ({
-    GetMenuItems: builder.query({
+    getMenuItems: builder.query({
       query: () => ({
-        url: "menuItem",
+        url: "menuitem",
       }),
-      providesTags: ["menuItems"],
+      providesTags: ["MenuItems"],
     }),
-    GetMenuItemsById: builder.query({
+    getMenuItemById: builder.query({
       query: (id) => ({
-        url: `menuItem/${id}`,
+        url: `menuitem/${id}`,
       }),
-      providesTags: ["menuItems"],
+      providesTags: ["MenuItems"],
     }),
   }),
 });
 
-export const { useGetMenuItemsQuery, useGetMenuItemsByIdQuery } = menuItemApi;
+export const { useGetMenuItemsQuery, useGetMenuItemByIdQuery } = menuItemApi;
 export default menuItemApi;
