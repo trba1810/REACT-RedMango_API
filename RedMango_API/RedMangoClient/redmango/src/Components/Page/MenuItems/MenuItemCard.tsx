@@ -24,7 +24,7 @@ function MenuItemCard(props: Props) {
     });
 
     if (response.data && response.data.isSuccess) {
-      toastNotify("Item added to cart successfully");
+      toastNotify("Item added to cart successfully!");
     }
     setIsAddingToCart(false);
   };

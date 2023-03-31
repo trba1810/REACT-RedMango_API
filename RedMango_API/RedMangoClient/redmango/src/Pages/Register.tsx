@@ -1,10 +1,13 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useRegisterUserMutation } from "../Apis/authApi";
-import { inputHelper } from "../Helper";
+import { MainLoader } from "../Components/Page/Common";
+import { inputHelper, toastNotify } from "../Helper";
 import { apiResponse } from "../Interfaces";
 import { SD_Roles } from "../Utility/SD";
 
 function Register() {
+  const navigate = useNavigate();
   const [registerUser] = useRegisterUserMutation();
   const [loading, setLoading] = useState(false);
   const [userInput, setUserInput] = useState({
@@ -31,9 +34,10 @@ function Register() {
       name: userInput.name,
     });
     if (response.data) {
-      console.log(response.data);
+      toastNotify("Registeration successful! Please login to continue.");
+      navigate("/login");
     } else if (response.error) {
-      console.log(response.error.data.errorMessages[0]);
+      toastNotify(response.error.data.errorMessages[0], "error");
     }
 
     setLoading(false);
@@ -41,6 +45,7 @@ function Register() {
 
   return (
     <div className="container text-center">
+      {loading && <MainLoader />}
       <form method="post" onSubmit={handleSubmit}>
         <h1 className="mt-5">Register</h1>
         <div className="mt-5">
@@ -92,7 +97,7 @@ function Register() {
           </div>
         </div>
         <div className="mt-5">
-          <button type="submit" className="btn btn-success">
+          <button type="submit" className="btn btn-success" disabled={loading}>
             Register
           </button>
         </div>
