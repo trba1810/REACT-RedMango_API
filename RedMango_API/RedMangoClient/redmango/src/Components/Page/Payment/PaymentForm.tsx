@@ -4,15 +4,19 @@ import {
   PaymentElement,
 } from "@stripe/react-stripe-js";
 import { useState } from "react";
+import { useCreateOrderMutation } from "../../../Apis/orderApi";
 import { toastNotify } from "../../../Helper";
+import { apiResponse, cartItemModel } from "../../../Interfaces";
+import { SD_Status } from "../../../Utility/SD";
 import { orderSummaryProps } from "../Order/orderSummaryProps";
-import { cartItemModel } from "../../../Interfaces";
 
 const PaymentForm = ({ data, userInput }: orderSummaryProps) => {
   const stripe = useStripe();
   const elements = useElements();
+  const [createOrder] = useCreateOrderMutation();
   const [isProcessing, setIsProcessing] = useState(false);
-
+  console.log("data");
+  console.log(data);
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -20,22 +24,24 @@ const PaymentForm = ({ data, userInput }: orderSummaryProps) => {
       return;
     }
     setIsProcessing(true);
-
     const result = await stripe.confirmPayment({
       //`Elements` instance that was used to create the Payment Element
       elements,
       confirmParams: {
-        return_url: "https://example.com/order/123/complete",
+        return_url: "https://localhost:44315/api/",
       },
+      redirect: "if_required",
     });
 
     if (result.error) {
       // Show error to your customer (for example, payment details incomplete)
-      toastNotify("Error occured", "error");
+      toastNotify("An unexpected error occured.", "error");
       setIsProcessing(false);
     } else {
       console.log(result);
 
+      let grandTotal = 0;
+      let totalItems = 0;
       const orderDetailsDTO: any = [];
       data.cartItems.forEach((item: cartItemModel) => {
         const tempOrderDetail: any = {};
@@ -44,9 +50,29 @@ const PaymentForm = ({ data, userInput }: orderSummaryProps) => {
         tempOrderDetail["itemName"] = item.menuItem?.name;
         tempOrderDetail["price"] = item.menuItem?.price;
         orderDetailsDTO.push(tempOrderDetail);
+        grandTotal += item.quantity! * item.menuItem?.price!;
+        totalItems += item.quantity!;
       });
+
+      const response: apiResponse = await createOrder({
+        pickupName: userInput.name,
+        pickupPhoneNumber: userInput.phoneNumber,
+        pickupEmail: userInput.email,
+        totalItems: totalItems,
+        orderTotal: grandTotal,
+        orderDetailsDTO: orderDetailsDTO,
+        stripePaymentIntentID: data.stripePaymentIntentId,
+        applicationUserId: data.userId,
+        status:
+          result.paymentIntent.status === "succeeded"
+            ? SD_Status.CONFIRMED
+            : SD_Status.PENDING,
+      });
+
+      console.log(response);
     }
   };
+  // "status": "string",
   return (
     <form onSubmit={handleSubmit}>
       <PaymentElement />
