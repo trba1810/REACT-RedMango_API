@@ -35,5 +35,9 @@ const orderApi = createApi({
   }),
 });
 
-export const { useCreateOrderMutation } = orderApi;
+export const {
+  useCreateOrderMutation,
+  useGetAllOrdersQuery,
+  useGetOrderDetailsQuery,
+} = orderApi;
 export default orderApi;
