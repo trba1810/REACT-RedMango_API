@@ -5,7 +5,7 @@ import { RootState } from "../../Storage/Redux/store";
 import { useGetAllOrdersQuery } from "../../Apis/orderApi";
 import { MainLoader } from "../../Components/Page/Common";
 import { orderHeaderModel } from "../../Interfaces";
-import OrderList from "../../Components/Page/Order/orderList";
+import OrderList from "../../Components/Page/Order/OrderList";
 
 function MyOrders() {
   const userId = useSelector((state: RootState) => state.userAuthStore.id);

@@ -26,7 +26,6 @@ const PaymentForm = ({ data, userInput }: orderSummaryProps) => {
     }
     setIsProcessing(true);
     const result = await stripe.confirmPayment({
-      //`Elements` instance that was used to create the Payment Element
       elements,
       confirmParams: {
         return_url: "https://localhost:44315/api/",
@@ -35,14 +34,13 @@ const PaymentForm = ({ data, userInput }: orderSummaryProps) => {
     });
 
     if (result.error) {
-      // Show error to your customer (for example, payment details incomplete)
       toastNotify("An unexpected error occured.", "error");
       setIsProcessing(false);
     } else {
       let grandTotal = 0;
       let totalItems = 0;
       const orderDetailsDTO: any = [];
-      data.cartItems.forEach((item: cartItemModel) => {
+      data.cartItems?.forEach((item: cartItemModel) => {
         const tempOrderDetail: any = {};
         tempOrderDetail["menuItemId"] = item.menuItem?.id;
         tempOrderDetail["quantity"] = item.quantity;

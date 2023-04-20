@@ -13,6 +13,7 @@ import {
   Payment,
   Register,
   ShoppingCart,
+  OrderDetails,
 } from "../Pages";
 import { Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
@@ -69,6 +70,7 @@ function App() {
             element={<OrderConfirmed />}
           ></Route>
           <Route path="/order/myOrders" element={<MyOrders />} />
+          <Route path="/order/orderDetails/:id" element={<OrderDetails />} />
           <Route path="*" element={<NotFound />}></Route>
         </Routes>
       </div>
