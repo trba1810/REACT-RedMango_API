@@ -7,12 +7,20 @@ import {
 } from "../../Apis/menuItemApi";
 import { useNavigate, useParams } from "react-router-dom";
 import { MainLoader } from "../../Components/Page/Common";
+import { SD_Categories } from "../../Utility/SD";
+
+const Categories = [
+  SD_Categories.APPETIZER,
+  SD_Categories.BEVERAGES,
+  SD_Categories.DESSERT,
+  SD_Categories.ENTREE,
+];
 
 const menuItemData = {
   name: "",
   description: "",
   specialTag: "",
-  category: "",
+  category: Categories[0],
   price: "",
 };
 
@@ -100,12 +108,10 @@ function MenuItemUpsert() {
     let response;
 
     if (id) {
-      //update
       formData.append("Id", id);
       response = await updateMenuItem({ data: formData, id });
       toastNotify("Menu Item updated successfully", "success");
     } else {
-      //create
       response = await createMenuItem(formData);
       toastNotify("Menu Item created successfully", "success");
     }
@@ -152,14 +158,17 @@ function MenuItemUpsert() {
               value={menuItemInputs.specialTag}
               onChange={handleMenuItemInput}
             />
-            <input
-              type="text"
-              className="form-control mt-3"
+            <select
+              className="form-control mt-3 form-select"
               placeholder="Enter Category"
               name="category"
               value={menuItemInputs.category}
               onChange={handleMenuItemInput}
-            />
+            >
+              {Categories.map((category) => (
+                <option value={category}>{category}</option>
+              ))}
+            </select>
             <input
               type="number"
               className="form-control mt-3"
