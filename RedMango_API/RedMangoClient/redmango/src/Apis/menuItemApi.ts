@@ -4,6 +4,10 @@ const menuItemApi = createApi({
   reducerPath: "menuItemApi",
   baseQuery: fetchBaseQuery({
     baseUrl: "https://localhost:44315/api/",
+    prepareHeaders: (headers: Headers, api) => {
+      const token = localStorage.getItem("token");
+      token && headers.append("Authorization", "Bearer " + token);
+    },
   }),
   tagTypes: ["MenuItems"],
   endpoints: (builder) => ({
