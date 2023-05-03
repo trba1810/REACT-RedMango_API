@@ -6,6 +6,7 @@ using RedMango_API.Models;
 using RedMango_API.Models.DTO;
 using RedMango_API.Utility;
 using System.Net;
+using System.Text.Json;
 
 namespace RedMango_API.Controllers
 {
@@ -24,20 +25,37 @@ namespace RedMango_API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResponse>> GetOrders(string? userId)
+        public async Task<ActionResult<ApiResponse>> GetOrders(string? userId, string searchString, string status, int pageNumber = 1, int pageSize = 5)
         {
             try
             {
-                var orderHeaders = _context.OrderHeaders.Include(x => x.OrderDetails).ThenInclude(x => x.MenuItem).OrderByDescending(x => x.OrderHeaderId);
+                IEnumerable<OrderHeader> orderHeaders = _context.OrderHeaders.Include(x => x.OrderDetails).ThenInclude(x => x.MenuItem).OrderByDescending(x => x.OrderHeaderId);
                 if (!string.IsNullOrEmpty(userId))
                 {
-                    _response.Result = orderHeaders.Where(x => x.ApplicationUserId == userId);
+                    orderHeaders = orderHeaders.Where(x => x.ApplicationUserId == userId);
 
                 }
-                else
+                if (!string.IsNullOrEmpty(searchString))
                 {
-                    _response.Result = orderHeaders;
+                    orderHeaders = orderHeaders
+                        .Where(u => u.PickupPhoneNumber.ToLower().Contains(searchString.ToLower()) ||
+                    u.PickupEmail.ToLower().Contains(searchString.ToLower())
+                    || u.PickupName.ToLower().Contains(searchString.ToLower()));
                 }
+                if (!string.IsNullOrEmpty(status))
+                {
+                    orderHeaders = orderHeaders.Where(u => u.Status.ToLower() == status.ToLower());
+                }
+                Pagination pagination = new()
+                {
+                    CurrentPage = pageNumber,
+                    PageSize = pageSize,
+                    TotalRecords = orderHeaders.Count(),
+                };
+
+                Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagination));
+
+                _response.Result = orderHeaders.Skip((pageNumber - 1) * pageSize).Take(pageSize);
                 _response.StatusCode = HttpStatusCode.OK;
                 return Ok(_response);
             }
@@ -131,7 +149,7 @@ namespace RedMango_API.Controllers
         {
             try
             {
-                if(orderHeaderUpdateDTO == null || id != orderHeaderUpdateDTO.OrderHeaderId) 
+                if (orderHeaderUpdateDTO == null || id != orderHeaderUpdateDTO.OrderHeaderId)
                 {
                     return BadRequest();
                 }
