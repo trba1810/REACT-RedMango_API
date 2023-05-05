@@ -79,10 +79,11 @@ function AllOrders() {
     } else if (direction === "next") {
       setPageOptions({ pageSize: 5, pageNumber: pageOptions.pageNumber + 1 });
     } else if (direction === "change") {
-    setPageOptions({
-      pageSize: pageSize ? pageSize : 5,
-      pageNumber: 1,
-    });
+      setPageOptions({
+        pageSize: pageSize ? pageSize : 5,
+        pageNumber: 1,
+      });
+    }
   };
 
   return (
@@ -122,7 +123,7 @@ function AllOrders() {
 
           <OrderList isLoading={isLoading} orderData={orderData} />
           <div className="d-flex mx-5 justify-content-end align-items-center">
-          <div>Rows per page: </div>
+            <div>Rows per page: </div>
             <div>
               <select
                 className="form-select mx-2"
